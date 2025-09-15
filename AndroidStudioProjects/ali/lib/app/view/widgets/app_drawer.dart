@@ -1,70 +1,94 @@
 import 'package:flutter/material.dart';
 import '../../../core/styles/colors.dart';
+import '../../../core/styles/dimens.dart';
 
 class AppDrawerContent extends StatelessWidget {
   const AppDrawerContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final c = AppColors.primary;
-    const t = TextStyle(fontWeight: FontWeight.w600, fontSize: 15);
+    AppDimens.init(context);
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: SizedBox(
-              height: 72,
-              child: Image.asset(
-                'assets/logo.png',
-                fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => const FlutterLogo(size: 56),
+    final c = AppColors.primary;
+    final t = TextStyle(
+      fontWeight: FontWeight.w600,
+      fontSize: 15 * AppDimens.scale,
+      color: AppColors.textPrimary,
+    );
+
+    return Material(
+      color: const Color(0xFFFFFFFF),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppDimens.paddingMedium,
+                AppDimens.paddingMedium,
+                AppDimens.paddingMedium,
+                AppDimens.spacingSmall,
+              ),
+              child: SizedBox(
+                height: 72 * AppDimens.scale,
+                child: Image.asset(
+                  'assets/logo.png',
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => FlutterLogo(size: 56 * AppDimens.scale),
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                children: const [
-                  _Section(
-                    headerLabel: 'ادارة المخزون',
-                    headerIcon: Icons.inventory_2_outlined,
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: AppDimens.paddingSmall),
+                child: Column(
+                  children: [
+                    _Section(
+                      headerLabel: 'ادارة المخزون',
+                      headerIcon: Icons.inventory_2_outlined,
+                      textStyle: t,
+                      children: const [
+                        _SubItem(label: 'الجرد', icon: Icons.inventory_2_outlined),
+                        _SubItem(label: 'طلبات السوق', icon: Icons.inventory_2_outlined),
+                        _SubItem(label: 'منتج نافذ', icon: Icons.inventory_2_outlined),
+                      ],
+                    ),
+                    SizedBox(height: 6 * AppDimens.scale),
+                    _MainItem(label: 'المحفظة', icon: Icons.person_outline, textStyle: t),
+                    _MainItem(label: 'المكافآت', icon: Icons.person_outline, textStyle: t),
+                    _MainItem(label: 'إبلاغ عن مشكلة', icon: Icons.person_outline, textStyle: t),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppDimens.paddingMedium,
+                AppDimens.spacingSmall,
+                AppDimens.paddingMedium,
+                AppDimens.paddingMedium + AppDimens.safeBottom,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      _SubItem(label: 'الجرد',         icon: Icons.inventory_2_outlined),
-                      _SubItem(label: 'طلبات السوق',   icon: Icons.inventory_2_outlined),
-                      _SubItem(label: 'منتج نافذ',     icon: Icons.inventory_2_outlined),
+                      Icon(Icons.logout_rounded, color: c, size: AppDimens.iconMedium),
+                      SizedBox(width: AppDimens.spacingSmall),
+                      Text('تسجيل خروج', style: t),
                     ],
                   ),
-                  SizedBox(height: 6),
-                  _MainItem(label: 'المحفظة',        icon: Icons.person_outline),
-                  _MainItem(label: 'المكافآت',       icon: Icons.person_outline),
-                  _MainItem(label: 'إبلاغ عن مشكلة', icon: Icons.person_outline),
+                  Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Icon(Icons.chevron_left, color: c, size: AppDimens.iconMedium),
+                  ),
                 ],
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.logout_rounded, color: c),
-                    const SizedBox(width: 8),
-                    const Text('تسجيل خروج', style: t),
-                  ],
-                ),
-                Icon(Icons.chevron_left, color: c),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -74,11 +98,13 @@ class _Section extends StatefulWidget {
   final String headerLabel;
   final IconData headerIcon;
   final List<Widget> children;
+  final TextStyle textStyle;
 
   const _Section({
     required this.headerLabel,
     required this.headerIcon,
     required this.children,
+    required this.textStyle,
   });
 
   @override
@@ -90,28 +116,35 @@ class _SectionState extends State<_Section> {
 
   @override
   Widget build(BuildContext context) {
+    AppDimens.init(context);
     final c = AppColors.primary;
-    const t = TextStyle(fontWeight: FontWeight.w600, fontSize: 15);
 
     return Column(
       children: [
         InkWell(
           onTap: () => setState(() => open = !open),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+            padding: EdgeInsets.symmetric(
+              vertical: AppDimens.spacingSmall,
+              horizontal: 6 * AppDimens.scale,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(widget.headerIcon, color: c),
-                    const SizedBox(width: 8),
-                    Text(widget.headerLabel, style: t),
+                    Icon(widget.headerIcon, color: c, size: AppDimens.iconMedium),
+                    SizedBox(width: AppDimens.spacingSmall),
+                    Text(widget.headerLabel, style: widget.textStyle),
                   ],
                 ),
-                Icon(open ? Icons.expand_less : Icons.expand_more, color: c),
+                Icon(
+                  open ? Icons.expand_less : Icons.expand_more,
+                  color: c,
+                  size: AppDimens.iconMedium,
+                ),
               ],
             ),
           ),
@@ -125,31 +158,48 @@ class _SectionState extends State<_Section> {
 class _MainItem extends StatelessWidget {
   final String label;
   final IconData icon;
+  final TextStyle? textStyle;
 
-  const _MainItem({required this.label, required this.icon});
+  const _MainItem({
+    required this.label,
+    required this.icon,
+    this.textStyle,
+  });
 
   @override
   Widget build(BuildContext context) {
+    AppDimens.init(context);
     final c = AppColors.primary;
-    const t = TextStyle(fontWeight: FontWeight.w600, fontSize: 15);
+    final t = textStyle ??
+        TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 15 * AppDimens.scale,
+          color: AppColors.textPrimary,
+        );
 
     return InkWell(
       onTap: () {},
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+        padding: EdgeInsets.symmetric(
+          vertical: AppDimens.spacingSmall + 2 * AppDimens.scale,
+          horizontal: 6 * AppDimens.scale,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, color: c),
-                const SizedBox(width: 8),
+                Icon(icon, color: c, size: AppDimens.iconMedium),
+                SizedBox(width: AppDimens.spacingSmall),
                 Text(label, style: t),
               ],
             ),
-            Icon(Icons.chevron_left, color: c),
+            Directionality(
+              textDirection: TextDirection.ltr,
+              child: Icon(Icons.chevron_left, color: c, size: AppDimens.iconMedium),
+            ),
           ],
         ),
       ),
@@ -165,20 +215,30 @@ class _SubItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppDimens.init(context);
     final c = AppColors.primary;
 
     return InkWell(
       onTap: () {},
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+        padding: EdgeInsets.symmetric(
+          vertical: AppDimens.spacingSmall,
+          horizontal: 6 * AppDimens.scale,
+        ),
         child: Row(
-          // في RTL: start يعني اليمين
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Icon(icon, size: 18, color: c),   // الأيقونة ملاصقة لليمين
-            const SizedBox(width: 8),
-            Text(label, textAlign: TextAlign.right),
+            Icon(icon, size: AppDimens.iconSmall, color: c),
+            SizedBox(width: AppDimens.spacingSmall),
+            Text(
+              label,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 14 * AppDimens.scale,
+                color: AppColors.textPrimary,
+              ),
+            ),
           ],
         ),
       ),
