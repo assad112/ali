@@ -34,53 +34,46 @@ class PillButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppDimens.init(context);
+
     final bool isEnabled = enabled && onTap != null;
 
-    final Color selBg  = selectedBgColor     ?? AppColors.pillSelectedBg;
-    final Color selFg  = selectedTextColor   ?? AppColors.pillSelectedFg;
-    final Color unsBg  = unselectedBgColor   ?? AppColors.pillUnselectedBg;
-    final Color unsFg  = unselectedTextColor ?? AppColors.pillUnselectedFg;
+    final Color selBg = selectedBgColor ?? AppColors.pillSelectedBg;
+    final Color selFg = selectedTextColor ?? AppColors.pillSelectedFg;
+    final Color unsBg = unselectedBgColor ?? AppColors.pillUnselectedBg;
+    final Color unsFg = unselectedTextColor ?? AppColors.pillUnselectedFg;
 
     final Color bg = selected ? selBg : unsBg;
     final Color fg = selected ? selFg : unsFg;
 
-    final double h = height ?? AppDimens.buttonHeight;
-    final double radius = (h / 2).clamp(16, 24);
-    final EdgeInsetsGeometry pad =
-        padding ?? EdgeInsets.symmetric(horizontal: AppDimens.paddingMedium);
+    final double defaultH = AppDimens.buttonHeight <= 0 ? 52 : AppDimens.buttonHeight;
+    final double h = height ?? defaultH;
+    final double radius = (h / 2).clamp(16.0, 24.0) as double;
+    final EdgeInsetsGeometry pad = padding ?? EdgeInsets.symmetric(horizontal: AppDimens.paddingMedium);
+
+    final BorderSide side = !selected && outlineWhenUnselected
+        ? BorderSide(color: AppColors.grey.withOpacity(0.5), width: 1)
+        : BorderSide.none;
+
+    final double elevation = showShadow ? 2 : 0;
 
     return Material(
-      color: Colors.transparent,
+      color: isEnabled ? bg : bg.withOpacity(0.6),
+      elevation: elevation,
+      shadowColor: AppColors.shadowSoft,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius), side: side),
       child: InkWell(
         onTap: isEnabled ? onTap : null,
         borderRadius: BorderRadius.circular(radius),
-        child: Container(
+        child: SizedBox(
           height: h,
-          alignment: Alignment.center,
-          padding: pad,
-          decoration: BoxDecoration(
-            color: isEnabled ? bg : bg.withOpacity(0.6),
-            borderRadius: BorderRadius.circular(radius),
-            border: !selected && outlineWhenUnselected
-                ? Border.all(color: AppColors.grey.withOpacity(0.5), width: 1)
-                : null,
-            boxShadow: showShadow
-                ? [
-              BoxShadow(
-                color: selected
-                    ? AppColors.shadowStrong
-                    : AppColors.shadowSoft,
-                blurRadius: 14,
-                offset: const Offset(0, 4),
+          child: Center(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: isEnabled ? fg : fg.withOpacity(0.6),
+                fontWeight: FontWeight.w600,
               ),
-            ]
-                : null,
-          ),
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: isEnabled ? fg : fg.withOpacity(0.6),
-              fontWeight: FontWeight.w600,
             ),
           ),
         ),

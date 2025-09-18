@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../core/styles/colors.dart';
 import '../../../core/styles/dimens.dart';
 
+// ✅ استدعِ صفحة التجهيز/التسليم
+import '../../../features/orders/presentation/pages/order_prep_page.dart';
+
 class AppDrawerContent extends StatelessWidget {
   const AppDrawerContent({super.key});
 
@@ -35,7 +38,8 @@ class AppDrawerContent extends StatelessWidget {
                 child: Image.asset(
                   'assets/logo.png',
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => FlutterLogo(size: 56 * AppDimens.scale),
+                  errorBuilder: (_, __, ___) =>
+                      FlutterLogo(size: 56 * AppDimens.scale),
                 ),
               ),
             ),
@@ -48,16 +52,46 @@ class AppDrawerContent extends StatelessWidget {
                       headerLabel: 'ادارة المخزون',
                       headerIcon: Icons.inventory_2_outlined,
                       textStyle: t,
-                      children: const [
-                        _SubItem(label: 'الجرد', icon: Icons.inventory_2_outlined),
-                        _SubItem(label: 'طلبات السوق', icon: Icons.inventory_2_outlined),
-                        _SubItem(label: 'منتج نافذ', icon: Icons.inventory_2_outlined),
+                      children: [
+                        _SubItem(
+                          label: 'الجرد',
+                          icon: Icons.fact_check_outlined,
+                          onTap: () {
+                            Navigator.of(context).pop(); // اغلق الدرج
+                            // TODO: انتقل لصفحة الجرد
+                          },
+                        ),
+                        _SubItem(
+                          label: 'طلبات السوق',
+                          icon: Icons.inventory_2_outlined,
+                          onTap: () {
+                            Navigator.of(context).pop(); // اغلق الدرج
+                            // ✅ افتح صفحة تجهيز/تسليم الطلب
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const OrderPrepPage(
+                                  orderId: '24444',
+                                  prepTime:
+                                  Duration(minutes: 10, seconds: 33),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        _SubItem(
+                          label: 'منتج نافذ',
+                          icon: Icons.remove_shopping_cart_outlined,
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            // TODO: انتقل لصفحة المنتجات النافذة
+                          },
+                        ),
                       ],
                     ),
                     SizedBox(height: 6 * AppDimens.scale),
-                    _MainItem(label: 'المحفظة', icon: Icons.person_outline, textStyle: t),
-                    _MainItem(label: 'المكافآت', icon: Icons.person_outline, textStyle: t),
-                    _MainItem(label: 'إبلاغ عن مشكلة', icon: Icons.person_outline, textStyle: t),
+                    _MainItem(label: 'المحفظة', icon: Icons.account_balance_wallet_outlined, textStyle: t),
+                    _MainItem(label: 'المكافآت', icon: Icons.card_giftcard_outlined, textStyle: t),
+                    _MainItem(label: 'إبلاغ عن مشكلة', icon: Icons.report_gmailerrorred_outlined, textStyle: t),
                   ],
                 ),
               ),
@@ -210,8 +244,13 @@ class _MainItem extends StatelessWidget {
 class _SubItem extends StatelessWidget {
   final String label;
   final IconData icon;
+  final VoidCallback? onTap; // ✅ جديد
 
-  const _SubItem({required this.label, required this.icon});
+  const _SubItem({
+    required this.label,
+    required this.icon,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +258,7 @@ class _SubItem extends StatelessWidget {
     final c = AppColors.primary;
 
     return InkWell(
-      onTap: () {},
+      onTap: onTap, // ✅ استخدم الاستدعاء
       borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
       child: Padding(
         padding: EdgeInsets.symmetric(
